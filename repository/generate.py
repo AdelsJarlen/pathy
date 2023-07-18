@@ -12,6 +12,7 @@ def generate_journey_from_start_stop_coordinates(start_point: Point, end_point: 
 
     print(start_point.latitude, start_point.longitude)
 
+
     body = """
         {
             trip(
