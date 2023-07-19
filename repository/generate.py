@@ -4,6 +4,7 @@ from data.model.point import Point
 from data.model.journey import Journey
 from geojson import LineString
 from uuid import uuid4
+import polyline
 
 def generate_journey_from_start_stop_coordinates(start_point: Point, end_point: Point):
     base = "http://localhost:8080"
@@ -12,31 +13,45 @@ def generate_journey_from_start_stop_coordinates(start_point: Point, end_point: 
 
     print(start_point.latitude, start_point.longitude)
 
+    start_pos_lat = start_point.latitude
+    start_pos_long = start_point.longitude
 
-    body = """
-        {
+    end_pos_lat = end_point.latitude
+    end_pos_long = end_point.longitude
+
+    body = f"""
+        {{
             trip(
-                from: {coordinates: {latitude: 59.92990, longitude: 10.71579}}
-                to: {coordinates: {latitude: 59.92543, longitude: 10.78583}}
-                modes: {directMode: bicycle}
-                triangleFactors: {safety: 1.5, slope: 1.5, time: 1.5}
-            ) {
-                tripPatterns {
-                legs {
+                from: {{
+                    coordinates: {{
+                        latitude: {start_pos_lat}, 
+                        longitude: {start_pos_long}
+                        }}
+                        }}
+                to: {{
+                    coordinates: {{
+                        latitude: {end_pos_lat}, 
+                        longitude: {end_pos_long}
+                        }}
+                    }}
+                modes: {{directMode: bicycle}}
+                triangleFactors: {{safety: 1.5, slope: 1.5, time: 1.5}}
+            ) {{
+            tripPatterns {{
+                legs {{
                     mode
                     distance
                     duration
-                    steps {
-                    latitude
-                    longitude
-                    }
-                }
-                }
-                debugOutput {
+                    pointsOnLink {{
+                        points
+                    }}
+                }}
+            }}
+            debugOutput {{
                 totalTime
-                }
-            }
-        }
+                }}
+            }}
+        }}
     """
 
     response = requests.post(url=url, json={"query":body})
@@ -50,13 +65,13 @@ def generate_journey_from_start_stop_coordinates(start_point: Point, end_point: 
         parsed_respone = json.loads(response.content)
         legs = parsed_respone['data']['trip']['tripPatterns'][0]['legs'][0]
         properties = {"mode" : legs['mode'], "distance" : legs['distance'], "duration":legs['duration']}
-        steps = legs['steps']
+        points = legs['pointsOnLink']['points']
+    
+        decodedListOfPoints = polyline.decode(points)
 
-        for step in steps:
-            latitude = step['latitude']
-            longitude = step['longitude']
+        for item in decodedListOfPoints:
+            list_with_coordinates.append([item[1],item[0]])
 
-            list_with_coordinates.append([latitude,longitude])
 
     return Journey(uuid4(), start_point, end_point, LineString(list_with_coordinates))
             
@@ -66,6 +81,6 @@ def generate_journey_from_start_stop_coordinates(start_point: Point, end_point: 
         
 
 
-test = generate_journey_from_start_stop_coordinates(Point(10.0,11.0),Point(12.0,13.0))
+test = generate_journey_from_start_stop_coordinates(Point(59.93577, 10.69618),Point(59.91350, 10.72918))
 
 print(test)
