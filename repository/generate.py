@@ -6,7 +6,7 @@ from geojson import LineString
 from uuid import uuid4
 import polyline
 
-def generate_journey_from_start_stop_coordinates(start_point: Point, end_point: Point):
+def generate_journey_from_start_stop_coordinates(start_point: Point, end_point: Point) -> Journey:
     base = "http://localhost:8080"
     uri = "/otp/routers/default/transmodel/index/graphql"
     url = base + uri
@@ -35,6 +35,7 @@ def generate_journey_from_start_stop_coordinates(start_point: Point, end_point: 
                         }}
                     }}
                 modes: {{directMode: bicycle}}
+                bicycleOptimisationMethod: triangle
                 triangleFactors: {{safety: 1.5, slope: 1.5, time: 1.5}}
             ) {{
             tripPatterns {{
@@ -63,9 +64,8 @@ def generate_journey_from_start_stop_coordinates(start_point: Point, end_point: 
     # Parsing output if successfull
     if response.status_code == 200:
         parsed_respone = json.loads(response.content)
-        legs = parsed_respone['data']['trip']['tripPatterns'][0]['legs'][0]
-        properties = {"mode" : legs['mode'], "distance" : legs['distance'], "duration":legs['duration']}
-        points = legs['pointsOnLink']['points']
+
+        points = parsed_respone['data']['trip']['tripPatterns'][0]['legs'][0]['pointsOnLink']['points']
     
         decodedListOfPoints = polyline.decode(points)
 
@@ -74,13 +74,8 @@ def generate_journey_from_start_stop_coordinates(start_point: Point, end_point: 
 
 
     return Journey(uuid4(), start_point, end_point, LineString(list_with_coordinates))
-            
-            
 
 
-        
-
-
-test = generate_journey_from_start_stop_coordinates(Point(59.93577, 10.69618),Point(59.91350, 10.72918))
-
-print(test)
+def test_generate_journey_from_start_stop_coordinates():          
+    test = generate_journey_from_start_stop_coordinates(Point(59.93577, 10.69618),Point(59.91350, 10.72918))
+    print(test)
