@@ -9,3 +9,4 @@ class Journey:
     start_pos: Point
     end_pos: Point
     path: LineString
+    duration_seconds: int

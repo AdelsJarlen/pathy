@@ -17,6 +17,7 @@ def generate_journey_from_start_stop_coordinates(start_point: Point, end_point: 
     if response.status_code == 200:
         parsed_respone = json.loads(response.content)
 
+        travel_time_seconds = parsed_respone['data']['trip']['tripPatterns'][0]['duration']
         points = parsed_respone['data']['trip']['tripPatterns'][0]['legs'][0]['pointsOnLink']['points']
     
         decodedListOfPoints = polyline.decode(points)
@@ -25,7 +26,7 @@ def generate_journey_from_start_stop_coordinates(start_point: Point, end_point: 
             list_with_coordinates.append([item[1],item[0]])
 
 
-    return Journey(uuid4(), start_point, end_point, LineString(list_with_coordinates))
+    return Journey(uuid4(), start_point, end_point, LineString(list_with_coordinates), duration_seconds = travel_time_seconds)
 
 def bicycle_graphQl_query(start_point, end_point) -> Response:
     base = "http://localhost:8080"
@@ -105,9 +106,8 @@ def csv_start_stop_to_journeys(file_path) -> list[Journey]:
 
 def journeys_to_feature_collection(journeys: list[Journey]) -> FeatureCollection:
     # Create a list of features from the LineString objects
-    line_strings = [journey.path for journey in journeys]
 
-    features = [Feature(geometry=line_string) for line_string in line_strings]
+    features = [Feature(geometry=journey.path, properties = {"duration_seconds" : journey.duration_seconds}) for journey in journeys]
     
     # Create a FeatureCollection from the features
     feature_collection = FeatureCollection(features)
