@@ -35,7 +35,7 @@ def run_all_tests():
     test_journeys_to_feature_collection()
     test_feature_collection_to_geojson()
 
-# run_all_tests()
+run_all_tests()
 
 # test_generate_journey_from_start_stop_coordinates
 # test_csv_start_stop_to_journeys()

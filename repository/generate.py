@@ -17,7 +17,7 @@ def generate_journey_from_start_stop_coordinates(start_point: Point, end_point: 
     if response.status_code == 200:
         parsed_respone = json.loads(response.content)
 
-        travel_time_seconds = parsed_respone['data']['trip']['tripPatterns'][0]['duration']
+        travel_time_seconds = parsed_respone['data']['trip']['tripPatterns'][0]['legs'][0]['duration']
         points = parsed_respone['data']['trip']['tripPatterns'][0]['legs'][0]['pointsOnLink']['points']
     
         decodedListOfPoints = polyline.decode(points)
