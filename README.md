@@ -5,10 +5,11 @@ Pathy is a small script that talks with an OTP[^1] instance running localy. With
 ## CSV File
 
 The CSV file should be in the following format: 
-'''
+
+```
 lat,lon,lat,lon
 lat,lon,lat,lon
 [...]
-'''
+```
 
 [^1]: OTP stands for [OpenTripPlanner](https://www.opentripplanner.org)
