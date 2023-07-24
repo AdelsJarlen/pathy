@@ -113,7 +113,7 @@ def csv_start_stop_to_journeys(file_path, progress_bar = False) -> list[Journey]
     print("Starting CSV to Journey conversion")
     cv = Condition()
     global current_line
-    current_line = 0
+    current_line = 1
     start_time = time.perf_counter()
 
     if progress_bar:
@@ -135,7 +135,7 @@ def csv_start_stop_to_journeys(file_path, progress_bar = False) -> list[Journey]
                 global current_line
                 print("Starting progress bar")
                 while True:
-                    if current_line % 10^(len(str(line_count)) - 4) == 0:
+                    if current_line % 10^(len(str(line_count)) - 1) == 0:
                         
                         time_seconds = ceil((time.perf_counter() - start_time)/current_line * line_count)
                         time_string = ("seconds", time_seconds)
