@@ -7,8 +7,13 @@ def test_generate_journey_from_start_stop_coordinates():
 
 def test_csv_start_stop_to_journeys():
     filepath_to_csv = "./test/test_file.csv"
-
+    
     print(csv_start_stop_to_journeys(filepath_to_csv))
+
+def test_large_csv_start_stop_to_journeys():
+    filepath_to_csv = "./test/200_000_tilfeldige_punktpar_oslo.csv"
+    
+    print(csv_start_stop_to_journeys(filepath_to_csv, progress_bar = True))
 
 def test_journeys_to_feature_collection():
     filepath_to_csv = "./test/test_file.csv"
@@ -35,9 +40,9 @@ def run_all_tests():
     test_journeys_to_feature_collection()
     test_feature_collection_to_geojson()
 
-run_all_tests()
+# run_all_tests()
 
 # test_generate_journey_from_start_stop_coordinates
-# test_csv_start_stop_to_journeys()
+test_large_csv_start_stop_to_journeys()
 # test_journeys_to_feature_collection
 # test_feature_collection_to_geojson()
